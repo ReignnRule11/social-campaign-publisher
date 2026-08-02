@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: scp_prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    depends_on:
+      - app
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: scp_grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./grafana_dashboard.json:/var/lib/grafana/dashboards/scp-dashboard.json:ro
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+
+# Note: this compose file expects the main app service defined in docker-compose.yml as 'app' and accessible by service name 'app'.

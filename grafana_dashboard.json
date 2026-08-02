@@ -1,0 +1,26 @@
+{
+  "annotations": {"list": []},
+  "panels": [
+    {
+      "type": "graph",
+      "title": "Retry jobs scheduled (total)",
+      "targets": [{"expr": "sum(scpublisher_retry_scheduled_total)", "format": "time_series"}],
+      "id": 1
+    },
+    {
+      "type": "graph",
+      "title": "Retry attempts",
+      "targets": [{"expr": "sum(scpublisher_retry_attempts_total)", "format": "time_series"}],
+      "id": 2
+    },
+    {
+      "type": "stat",
+      "title": "Retries reached max",
+      "targets": [{"expr": "sum(scpublisher_retry_max_reached_total)", "format": "time_series"}],
+      "id": 3
+    }
+  ],
+  "schemaVersion": 27,
+  "title": "Social Campaign Publisher - Retries",
+  "version": 1
+}
