@@ -59,3 +59,15 @@ Monitoring tips
 7. Check SocialPostEntry status flips to "published" after a valid webhook; a forged signature returns 400 and leaves status unchanged.
 
 EVIDENCE.md contains test outputs and pointers to verify behavior.
+
+Detect-secrets baseline (generate & audit)
+
+1. Install tools: pip install pre-commit detect-secrets
+2. Run a scan to create a baseline:
+   detect-secrets scan > .secrets.baseline
+3. Audit findings interactively:
+   detect-secrets audit .secrets.baseline
+   - Review each finding; redact or rotate any real secrets before committing.
+4. Commit the audited baseline: git add .secrets.baseline && git commit -m "Add detect-secrets baseline"
+
+Notes: CI runs detect-secrets and the heuristic scanner. After adding a trusted baseline, CI will only fail on new secret findings.
