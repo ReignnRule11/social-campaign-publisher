@@ -23,3 +23,6 @@ build/
 
 # Pipenv
 Pipfile.lock
+
+# Secrets (keep local only)
+/secrets/*.txt

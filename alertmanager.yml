@@ -1,0 +1,29 @@
+global:
+  resolve_timeout: 5m
+
+route:
+  receiver: 'team-email'
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 12h
+
+receivers:
+  - name: 'team-email'
+    email_configs:
+      - to: 'alerts@example.com'
+        from: 'alertmanager@example.com'
+        smarthost: 'smtp.example.com:587'
+        auth_username: 'smtp-user'
+        auth_identity: 'smtp-user'
+        auth_password: 'smtp-pass'
+
+# Slack receiver removed from committed config to avoid leaking secrets.
+# To enable Slack notifications, create a secured alertmanager.yml locally that includes a slack_configs receiver
+# pointing to your webhook URL (do not commit the webhook URL to the repo). Example (uncommitted):
+#   - name: 'slack-channel'
+#     slack_configs:
+#       - api_url: 'https://hooks.slack.com/services/<your-webhook>'
+#         channel: '#alerts'
+#         send_resolved: true
+
+# For production: replace email placeholders with real secrets and store them as docker secrets or environment variables.

@@ -13,6 +13,17 @@ services:
     depends_on:
       - app
 
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: scp_alertmanager
+    volumes:
+      - ./alertmanager.yml:/etc/alertmanager/config.yml:ro
+      - alertmanager-data:/alertmanager
+    ports:
+      - "9093:9093"
+    depends_on:
+      - prometheus
+
   grafana:
     image: grafana/grafana:latest
     container_name: scp_grafana
@@ -35,13 +46,14 @@ services:
 volumes:
   prometheus-data:
   grafana-data:
+  alertmanager-data:
 
 secrets:
   grafana_admin_password:
     file: ./secrets/grafana_admin_password.txt
 
 # Note: this compose file expects the main app service defined in docker-compose.yml as 'app' and accessible by service name 'app'.
-# Set GRAFANA_ADMIN_PASSWORD env var to override the default admin password (recommended for production).
+# The Alertmanager container is available at http://localhost:9093 and Prometheus is configured to talk to it.
 
 volumes:
   prometheus-data:

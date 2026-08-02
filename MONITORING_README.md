@@ -18,5 +18,7 @@ Notes:
 - docker-compose.monitoring.yml mounts provisioning files into Grafana so the datasource and dashboard are auto-loaded.
 - For production, use Docker secrets to protect sensitive values. The compose file now uses a Docker secret for Grafana admin password: ./secrets/grafana_admin_password.txt. Replace that file with a secure secret before deploying.
 - Persistent volumes (prometheus-data, grafana-data) are declared for Prometheus and Grafana. These ensure metric and dashboard state survives container restarts.
-- Prometheus alert rules are included (prometheus_alerts.yml) that fire when retry_max_reached_total > 0; hook Alertmanager or external notification in production to receive alerts.
+- Prometheus alert rules are included (prometheus_alerts.yml) that fire when retry_max_reached_total > 0.
+- Alertmanager is included in docker-compose.monitoring.yml and wired to Prometheus. Alertmanager config examples (alertmanager.yml) include Slack and email receivers — replace placeholders with your secrets.
+- To receive notifications, configure real SMTP/Slack webhook secrets and either mount them as Docker secrets or provide via a secure mechanism.
 - To inspect dashboards before Grafana starts, you can view grafana_dashboard.json in the repo.
