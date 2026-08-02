@@ -6,6 +6,7 @@ services:
     container_name: scp_prometheus
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
     ports:
       - "9090:9090"
     depends_on:
@@ -15,12 +16,21 @@ services:
     image: grafana/grafana:latest
     container_name: scp_grafana
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
     volumes:
+      - ./grafana_datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml:ro
+      - ./grafana_dashboard_provider.yml:/etc/grafana/provisioning/dashboards/dashboard.yml:ro
       - ./grafana_dashboard.json:/var/lib/grafana/dashboards/scp-dashboard.json:ro
+      - grafana-data:/var/lib/grafana
     ports:
       - "3000:3000"
     depends_on:
       - prometheus
 
+volumes:
+  prometheus-data:
+  grafana-data:
+
 # Note: this compose file expects the main app service defined in docker-compose.yml as 'app' and accessible by service name 'app'.
+# Set GRAFANA_ADMIN_PASSWORD env var to override the default admin password (recommended for production).
