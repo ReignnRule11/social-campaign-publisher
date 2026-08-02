@@ -1,0 +1,11 @@
+groups:
+  - name: scp_alerts
+    rules:
+      - alert: RetryMaxReached
+        expr: scpublisher_retry_max_reached_total > 0
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Retry max attempts reached"
+          description: "One or more SocialPostEntry records have reached the max retry count."

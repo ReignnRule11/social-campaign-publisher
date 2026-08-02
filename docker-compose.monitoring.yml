@@ -6,6 +6,7 @@ services:
     container_name: scp_prometheus
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus_alerts.yml:/etc/prometheus/rules/prometheus_alerts.yml:ro
       - prometheus-data:/prometheus
     ports:
       - "9090:9090"
@@ -17,7 +18,10 @@ services:
     container_name: scp_grafana
     environment:
       - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+      # GF_SECURITY_ADMIN_PASSWORD will be set from docker secret
+    secrets:
+      - grafana_admin_password
+    command: sh -c "export GF_SECURITY_ADMIN_PASSWORD=$(cat /run/secrets/grafana_admin_password) && /run.sh"
     volumes:
       - ./grafana_datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml:ro
       - ./grafana_dashboard_provider.yml:/etc/grafana/provisioning/dashboards/dashboard.yml:ro
@@ -27,6 +31,17 @@ services:
       - "3000:3000"
     depends_on:
       - prometheus
+
+volumes:
+  prometheus-data:
+  grafana-data:
+
+secrets:
+  grafana_admin_password:
+    file: ./secrets/grafana_admin_password.txt
+
+# Note: this compose file expects the main app service defined in docker-compose.yml as 'app' and accessible by service name 'app'.
+# Set GRAFANA_ADMIN_PASSWORD env var to override the default admin password (recommended for production).
 
 volumes:
   prometheus-data:
