@@ -21,4 +21,14 @@ Notes:
 - Prometheus alert rules are included (prometheus_alerts.yml) that fire when retry_max_reached_total > 0.
 - Alertmanager is included in docker-compose.monitoring.yml and wired to Prometheus. Alertmanager config examples (alertmanager.yml) include Slack and email receivers — replace placeholders with your secrets.
 - To receive notifications, configure real SMTP/Slack webhook secrets and either mount them as Docker secrets or provide via a secure mechanism.
+
+Example: create Docker secrets locally (do NOT commit secrets into the repo)
+
+  echo -n "https://hooks.slack.com/services/XXX/YYY/ZZZ" | docker secret create slack_webhook -
+  echo -n "smtp-password" | docker secret create smtp_pass -
+
+Then deploy the stack (Docker Swarm) or use a docker-compose implementation that supports secrets:
+
+  docker stack deploy -c docker-compose.yml -c docker-compose.monitoring.yml scp
+
 - To inspect dashboards before Grafana starts, you can view grafana_dashboard.json in the repo.

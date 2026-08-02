@@ -1,0 +1,18 @@
+{{ define "scp.alert.summary" }}
+{{ printf "%s: %s" .GroupLabels.alertname .CommonLabels.instance }}
+{{ end }}
+
+{{ define "scp.alert.details" }}
+{{ range .Alerts }}
+*Labels*
+{{ range $k, $v := .Labels }}
+- {{ $k }} = {{ $v }}
+{{ end }}
+
+*Annotations*
+{{ range $k, $v := .Annotations }}
+- {{ $k }} = {{ $v }}
+{{ end }}
+
+{{ end }}
+{{ end }}
