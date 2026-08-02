@@ -6,3 +6,9 @@ repos:
         entry: python scripts/check_secrets.py --staged
         language: system
         stages: [commit]
+
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.4.0
+    hooks:
+      - id: detect-secrets
+        args: ['--baseline', '.secrets.baseline']
