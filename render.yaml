@@ -1,5 +1,5 @@
-# Render Blueprint for a staging environment.
-# Review service plans and expected costs in Render before applying.
+# Zero-cost Render staging Blueprint.
+# Free web + free Postgres only; no paid worker, Redis, or persistent disk.
 services:
   - type: web
     name: social-campaign-publisher-staging
@@ -12,50 +12,16 @@ services:
     envVars:
       - key: APP_ENV
         value: production
+      # Without Redis/RQ, retries use the in-process APScheduler.
       - key: ENABLE_SCHEDULER
-        value: "false"
+        value: "true"
       - key: DATABASE_URL
         fromDatabase:
           name: social-campaign-publisher-staging-db
-          property: connectionString
-      - key: REDIS_URL
-        fromService:
-          name: social-campaign-publisher-staging-redis
-          type: keyvalue
           property: connectionString
       - key: APP_API_KEY
         generateValue: true
       - fromGroup: social-campaign-publisher-staging-secrets
-
-  - type: worker
-    name: social-campaign-publisher-staging-worker
-    runtime: python
-    plan: starter
-    region: frankfurt
-    buildCommand: pip install -r requirements.txt
-    startCommand: rq worker publish-retries
-    envVars:
-      - key: APP_ENV
-        value: production
-      - key: ENABLE_SCHEDULER
-        value: "false"
-      - key: DATABASE_URL
-        fromDatabase:
-          name: social-campaign-publisher-staging-db
-          property: connectionString
-      - key: REDIS_URL
-        fromService:
-          name: social-campaign-publisher-staging-redis
-          type: keyvalue
-          property: connectionString
-      - fromGroup: social-campaign-publisher-staging-secrets
-
-  - type: keyvalue
-    name: social-campaign-publisher-staging-redis
-    plan: 256mb
-    region: frankfurt
-    maxmemoryPolicy: noeviction
-    ipAllowList: []
 
 databases:
   - name: social-campaign-publisher-staging-db
