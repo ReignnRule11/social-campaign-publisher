@@ -1,0 +1,73 @@
+# Render Blueprint for a staging environment.
+# Review service plans and expected costs in Render before applying.
+services:
+  - type: web
+    name: social-campaign-publisher-staging
+    runtime: python
+    plan: free
+    region: frankfurt
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /healthz
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: ENABLE_SCHEDULER
+        value: "false"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: social-campaign-publisher-staging-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: social-campaign-publisher-staging-redis
+          type: keyvalue
+          property: connectionString
+      - key: APP_API_KEY
+        generateValue: true
+      - fromGroup: social-campaign-publisher-staging-secrets
+
+  - type: worker
+    name: social-campaign-publisher-staging-worker
+    runtime: python
+    plan: starter
+    region: frankfurt
+    buildCommand: pip install -r requirements.txt
+    startCommand: rq worker publish-retries
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: ENABLE_SCHEDULER
+        value: "false"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: social-campaign-publisher-staging-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: social-campaign-publisher-staging-redis
+          type: keyvalue
+          property: connectionString
+      - fromGroup: social-campaign-publisher-staging-secrets
+
+  - type: keyvalue
+    name: social-campaign-publisher-staging-redis
+    plan: 256mb
+    region: frankfurt
+    maxmemoryPolicy: noeviction
+    ipAllowList: []
+
+databases:
+  - name: social-campaign-publisher-staging-db
+    plan: free
+    region: frankfurt
+    databaseName: social_campaign_publisher
+    user: scp_staging
+
+envVarGroups:
+  - name: social-campaign-publisher-staging-secrets
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: WEBHOOK_SECRET
+        generateValue: true
