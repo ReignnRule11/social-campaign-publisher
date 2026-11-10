@@ -6,8 +6,7 @@ pillow>=10.0
 cryptography>=41.0
 pytest>=8.0
 httpx>=0.24
-# Optional durable queue for retries
 redis>=4.5
 rq>=1.2
-# Prometheus metrics
 prometheus_client>=0.16
+psycopg[binary]>=3.1
