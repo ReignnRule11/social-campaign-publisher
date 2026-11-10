@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: ["master", "main", "deploy/render-staging-hardening"]
+    branches: ["master", "main", "deploy/render-staging-hardening", "deploy/render-free-staging"]
   pull_request:
 
 permissions:
